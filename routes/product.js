@@ -13,10 +13,6 @@ router.get('/create-product-table', (req, res) => {
     })
  });
 
-/*  router.get('/tab', (req,res) => {
-   res.render('tab');
- }) */
-
 
  // insert medcine in the medicine bank by making a post request
  router.post('/insert-medicine', (req, res) => {
@@ -76,7 +72,7 @@ router.get('/fetch-medicine/:id', function(req, res) {
 });
 
 // update the medicine from the table
-router.post('/update-medicine/:id', function(req, res) {
+router.put('/update-medicine/:id', function(req, res) {
   var medicine_name  = req.body.medicine_name;
   var type = req.body.type || null;
   var parent_company  = req.body.parent_company;

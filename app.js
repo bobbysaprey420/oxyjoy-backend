@@ -22,9 +22,15 @@ app.get('/createdb', (req,res) => {
     })
 })
 
-var indexRoutes = require("./routes/product");
+var productRoutes = require("./routes/product");
+var userIndex = require("./routes/user")
 
-app.use("/", indexRoutes);
+app.get('/tab', (req,res) => {
+    res.render('tab');
+  })
+
+app.use("/", productRoutes);
+app.use("/user", userIndex);
 
 app.listen('3000', () => {
     console.log('Server started at port 3000');
