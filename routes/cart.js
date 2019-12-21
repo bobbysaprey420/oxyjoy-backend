@@ -316,7 +316,13 @@ router.get('/prescription-image/:id', (req,res) => {
             res.redirect('/' + result[0].image_url);
         }
     })
-})
+});
+
+/* router.get('/direct-order-asd1234', (req, res) => {
+    var name = 
+}) */
+
+
 
 
  module.exports = router;

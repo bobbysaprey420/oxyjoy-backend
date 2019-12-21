@@ -11,7 +11,7 @@ app.use(methodOverride("_method"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
-
+app.use('/direct_uploads', express.static('direct_uploads'));
 
 
 
@@ -27,7 +27,8 @@ app.get('/createdb', (req,res) => {
 
 var productRoutes = require("./routes/product");
 var userIndex = require("./routes/user")
-var cart = require("./routes/cart")
+var cart = require("./routes/cart");
+var directOrder = require("./routes/direct_order")
 
 app.get('/tab', (req,res) => {
     res.render('tab');
@@ -38,6 +39,7 @@ app.get('/tab', (req,res) => {
 
 
 app.use("/", productRoutes);
+app.use("/", directOrder)
 app.use("/user", userIndex);
 app.use("/cart", cart);
 

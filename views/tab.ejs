@@ -1,21 +1,12 @@
-<form action="/cart/submit-order" method="POST" enctype="multipart/form-data">
-    <input type="text" name="user_id" id="" placeholder="ques">
+<form action="/post-direct-order" method="POST" enctype="multipart/form-data">
+    <input type="text" name="user_id" id="" placeholder="id">
+    <input type="text" name="address_id" id="" placeholder="address_id">
+    
     <input type="file" accept="image/*" name="productImage" >
-<!--     <input type="text" name="medicine_id" placeholder="opt1" id="">
-    <input type="text" name="quantity" placeholder="opt2" id=""> -->
-<!--     <input type="text" name="state" placeholder="opt3" id="">
-    <input type="text" name="mobile_no" placeholder="opt4" id="">
-    <input type="text" name="landmark" placeholder="sub" id=""> -->
    <button type="submit">CLick</button>
 </form> 
 
-<!-- <form class="deleteForm" action="/cart/delete-item-cart/1/3?_method=DELETE" method="POST">
+<form class="deleteForm" action="/delete-direct-order-byuser_id/1?_method=DELETE" method="POST">
     <button class="btn btn-xs btn-outline-danger">Delete</button>
-</form> -->
+</form>
 
-<!-- <form action="cart/upload" method="post" enctype="multipart/form-data">
-    <input type="file" accept="image/*" name="photo" >
-    <input type="submit" value="upload">
-</form> -->
-  <!-- 
-"/user/delete-address/2?_method=DELETE" -->
