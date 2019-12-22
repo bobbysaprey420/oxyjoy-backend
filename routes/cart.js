@@ -77,7 +77,7 @@ router.post('/insert-medicine-cart', (req,res) => {
  });
 
 router.get('/get-user-cart/:id', (req,res) => {
-     let sql = "SELECT * FROM cart WHERE user_id =" + mysql.escape(req.params.id);
+     let sql = "SELECT * FROM cart LEFT JOIN medicine ON cart.medicine_id = medicine.medicine_id WHERE user_id ="+  mysql.escape(req.params.id);
      mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
