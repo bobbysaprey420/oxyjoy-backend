@@ -4,25 +4,6 @@ const mysql = require('mysql');
 var mysqlConnection = require('../connection')
 const multer = require('multer');
 
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, './uploads/');
-    },
-    filename: function(req, file, cb) {
-        cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
-    }
-});
-const fileFilter = (req, file, cb) => {
-    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png'){
-        cb(null, true)
-    }
-    else{
-        cb(null , false)
-    }
-}
-const upload = multer({ storage : storage, fileFilter : fileFilter});
-
-
 
 // create medicine table
 router.get('/create-cart-table', (req, res) => {
@@ -107,7 +88,7 @@ router.delete('/delete-item-cart/:user_id/:medicine_id', (req, res) => {
 
 
 router.get('/create-order-table', (req, res) => {
-    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, status VARCHAR(128) DEFAULT 'NOT CONFIRMED', image_url VARCHAR(8000) NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id))"
+    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -118,17 +99,6 @@ router.get('/create-order-table', (req, res) => {
     })
 });
 
-router.get('/alter-order-table', (req, res) =>{
-    let sql = "ALTER TABLE orders ADD COLUMN image_url VARCHAR(8000) NOT NULL AFTER status"
-    mysqlConnection.query(sql, (err, result) => {
-        if(err){
-            console.log(err);
-            res.status(500).send({ error: 'Error in altering order table' })
-        }
-        else
-        res.send({success : "success"});
-    })
-})
 
 router.get('/create-order-product-table', (req, res) => {
     let sql = "CREATE TABLE order_product(order_id INT NOT NULL, medicine_id INT NOT NULL, quantity INT NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(order_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
@@ -142,18 +112,16 @@ router.get('/create-order-product-table', (req, res) => {
     })
 });
 
-router.post('/submit-order', upload.single('productImage'), (req,res) => {
+router.post('/submit-order', (req,res) => {
     var user_id = req.body.user_id;
-    console.log(req.file)
-    var path = req.file.path;
-    var path2 ="uploads/" + path.substr(8, path.length);
+    const address_id = req.body.address_id;
     var order_id = null
     if(!user_id){
        res.status(500).send({ error: 'User Id cannot be null' });
     }
     else{
-        var value    = [[user_id, path2]];
-        let sql = "INSERT INTO orders (user_id, image_url) VALUES ?"
+        var value    = [[user_id, address_id]];
+        let sql = "INSERT INTO orders (user_id, address_id) VALUES ?"
         mysqlConnection.query(sql, [value] , (err, result) => {
             if(err){
                 res.status(500).send({ error: 'Error in inserting' })
@@ -305,18 +273,7 @@ router.get('/order-details/:id', (req,res) => {
     })
 });
 
-router.get('/prescription-image/:id', (req,res) => {
-    var order_id = req.params.id;
-    let sql = "SELECT image_url FROM orders WHERE order_id ="+ mysql.escape(order_id)
-    mysqlConnection.query(sql, (err, result) => {
-        if(err){
-            res.status(500).send({ error: 'Error in fetching prscription photo of a order' })
-        }
-        else{
-            res.redirect('/' + result[0].image_url);
-        }
-    })
-});
+
 
 /* router.get('/direct-order-asd1234', (req, res) => {
     var name = 
