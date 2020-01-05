@@ -194,6 +194,8 @@ router.post('/submit-order', (req,res) => {
     }
 });
 
+
+
 router.get('/all-order-details-user/:id', (req,res) =>{
     var user_id = req.params.id;
     let sql = "SELECT * FROM orders WHERE user_id = " + mysql.escape(user_id);
@@ -272,6 +274,30 @@ router.get('/order-details/:id', (req,res) => {
         }
     })
 });
+
+router.get('/all-orders', (req,res) =>{
+    let sql = "SELECT * FROM orders"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all orders' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
+
+router.get('/allorder-product-details', (req, res) =>{
+    let sql = "SELECT * FROM order_product LEFT JOIN medicine ON order_product.medicine_id = medicine.medicine_id"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all orders product detail' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+})
 
 
 

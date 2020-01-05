@@ -105,5 +105,18 @@ router.delete('/delete-direct-order/:id', (req, res) => {
 });
 
 
+router.get('/all-direct-orders', (req,res) =>{
+    let sql = "SELECT * FROM direct_order"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all direct orders' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
+
+
 
  module.exports = router;
