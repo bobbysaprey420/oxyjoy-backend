@@ -5,7 +5,7 @@ var mysqlConnection = require('../connection')
 
 // create user table
 router.get('/create-user-table', (req, res) => {
-    let sql = "CREATE TABLE user(user_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(256) NOT NULL)"
+    let sql = "CREATE TABLE user(user_id VARCHAR(1024) PRIMARY KEY NOT NULL, name VARCHAR(256) NOT NULL)"
     mysqlConnection.query(sql, (err, result) => {
       if(err){
         res.send({ error : "Error in creating table", message : err})
@@ -20,13 +20,14 @@ router.get('/create-user-table', (req, res) => {
 router.post('/insert-user', (req, res) => {
     console.log(req.body.mobile_no)
    var name  = req.body.name;
-   if(!name){
-     console.log("Invalid insert, name cannot be null");
+   var user_id = req.body.user_id;
+   if(!name || !user_id){
+     console.log("Invalid insert, name or user id cannot be null");
      res.status(500).send({ error: 'User_id not found' })
    }
    else{
-     var value    = [[name]];
-     let sql = "INSERT INTO user (name) VALUES ?"
+     var value    = [[user_id, name]];
+     let sql = "INSERT INTO user (user_id, name) VALUES ?"
      mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
