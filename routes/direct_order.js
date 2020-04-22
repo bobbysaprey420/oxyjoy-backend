@@ -8,7 +8,7 @@ var mysqlConnection = require('../connection')
 
 // create medicine table
 router.get('/create-direct-order-table', (req, res) => {
-    let sql = "CREATE TABLE direct_order(order_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL, address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
+    let sql = "CREATE TABLE direct_order(order_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL,imagefile_refernce VARCHAR(1000) NOT NULL ,address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -22,13 +22,14 @@ router.get('/create-direct-order-table', (req, res) => {
  router.post('/post-direct-order', (req, res) => {
      const user_id = req.body.user_id;
      const address_id = req.body.address_id;
+     const imagefile_refernce=req.body.imagefile_refernce;
 
      if(!user_id){
         res.status(500).send({ error: 'User Id cannot be null' });
      }
      else{
-         var value    = [[user_id, address_id]];
-         let sql = "INSERT INTO direct_order(user_id, address_id) VALUES ?"
+         var value    = [[user_id, address_id,imagefile_refernce]];
+         let sql = "INSERT INTO direct_order(user_id, address_id,imagefile_refernce) VALUES ?"
          mysqlConnection.query(sql, [value] , (err, result) => {
              if(err){
                  res.status(500).send({ error: 'Error in inserting' })
