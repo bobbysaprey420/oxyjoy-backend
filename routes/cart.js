@@ -7,7 +7,7 @@ const multer = require('multer');
 
 // create medicine table
 router.get('/create-cart-table', (req, res) => {
-    let sql = "CREATE TABLE cart(user_id INT NOT NULL, medicine_id INT NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
+    let sql = "CREATE TABLE cart(user_id VARCHAR(1024) NOT NULL, medicine_id INT NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -88,7 +88,7 @@ router.delete('/delete-item-cart/:user_id/:medicine_id', (req, res) => {
 
 
 router.get('/create-order-table', (req, res) => {
-    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
+    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);

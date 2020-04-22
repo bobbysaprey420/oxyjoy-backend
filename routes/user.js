@@ -88,7 +88,7 @@ router.delete('/delete-user/:id', function(req, res, next) {
 
 // create address table
 router.get('/create-address-table', (req, res) => {
-  let sql = "CREATE TABLE address(address_id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, address VARCHAR(5000), landmark VARCHAR(1000), city VARCHAR(128), state VARCHAR(128), mobile_no VARCHAR(128), FOREIGN KEY (user_id) REFERENCES user(user_id))"
+  let sql = "CREATE TABLE address(address_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address VARCHAR(5000), landmark VARCHAR(1000), city VARCHAR(128), state VARCHAR(128), mobile_no VARCHAR(128), FOREIGN KEY (user_id) REFERENCES user(user_id))"
   mysqlConnection.query(sql, (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in creating table", message : err})
