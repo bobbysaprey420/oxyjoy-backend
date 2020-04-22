@@ -287,6 +287,7 @@ router.get('/all-orders', (req,res) =>{
     });
 });
 
+
 router.get('/allorder-product-details', (req, res) =>{
     let sql = "SELECT * FROM order_product LEFT JOIN medicine ON order_product.medicine_id = medicine.medicine_id"
     mysqlConnection.query(sql, (err, result) => {
