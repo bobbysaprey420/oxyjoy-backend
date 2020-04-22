@@ -8,7 +8,7 @@ var mysqlConnection = require('../connection')
 
 // create medicine table
 router.get('/create-direct-order-table', (req, res) => {
-    let sql = "CREATE TABLE direct_order(order_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id INT NOT NULL,imagefile_refernce VARCHAR(1000) NOT NULL ,address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
+    let sql = "CREATE TABLE direct_order(order_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, user_id VARCHAR(1024) NOT NULL,imagefile_refernce VARCHAR(1000) NOT NULL ,address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
