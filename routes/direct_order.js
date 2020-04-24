@@ -63,7 +63,7 @@ router.get('/create-direct-order-table', (req, res) => {
    })
  });
 
- router.post('/update-direct-order-status', (req, res) =>{
+ router.put('/update-direct-order-status', (req, res) =>{
     var status = req.body.status;
     var order_id = req.body.order_id;
     let sql = "UPDATE direct_order SET status =" + mysql.escape(status) + " WHERE order_id = " + mysql.escape(order_id);
@@ -83,7 +83,7 @@ router.delete('/delete-direct-order-byuser_id/:id', (req, res) => {
     mysqlConnection.query(sql, (err, result) => {
        if(err){
            console.log(err);
-           res.status(500).send({ error: 'Error in deleting a medicine from cart' })
+           res.status(500).send({ error: 'Error in deleting a direct order by  user from direct order table' })
        }
        else{
            res.send({success : "Delete Success"});
@@ -107,7 +107,7 @@ router.delete('/delete-direct-order/:id', (req, res) => {
 
 
 router.get('/all-direct-orders', (req,res) =>{
-    let sql = "SELECT * FROM direct_order"
+    let sql = "SELECT * FROM direct_order LEFT JOIN user ON direct_order.user_id = user.user_id LEFT JOIN address ON address.user_id = user.user_id"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             res.status(500).send({ error: 'Error in fetching all direct orders' })

@@ -5,7 +5,7 @@ var mysqlConnection = require('../connection')
 
 // create medicine table
 router.get('/create-product-table', (req, res) => {
-    let sql = "CREATE TABLE medicine(medicine_id INT AUTO_INCREMENT PRIMARY KEY, medicine_name VARCHAR(1000) NOT NULL, type VARCHAR(5000), parent_company VARCHAR(1000) NOT NULL, price FLOAT NOT NULL, product_description TEXT, discount_price FLOAT, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, taxable BOOLEAN)"
+    let sql = "CREATE TABLE medicine(medicine_id INT(11) AUTO_INCREMENT PRIMARY KEY, medicine_name TEXT NOT NULL, COMPOSITION TEXT, HSN_CODE int(11), GST text, price int(11) not null, P_T_R double, P_T_S double, discount_price double, type text, product_description text, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)"
     mysqlConnection.query(sql, (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in creating table", message : err})
@@ -21,20 +21,23 @@ router.get('/create-product-table', (req, res) => {
  router.post('/insert-medicine', (req, res) => {
    console.log(req.body)
   var medicine_name  = req.body.medicine_name;
-  var type = req.body.type || null;
-  var parent_company  = req.body.parent_company;
-  var price  = req.body.price;
-  var product_description  = req.body.product_description || null;
-  var discount_price  = req.body.discount_price || null;
-  var taxable    = req.body.taxable || null;
+  var COMPOSITION = req.body.COMPOSITION || null;
+  var HSN_CODE  = req.body.HSN_CODE || null;
+  var GST  = req.body.GST || null;
+  var price   = req.body.price;
+  var P_T_R   = req.body.P_T_R  || null;
+  var P_T_S = req.body.P_T_S  || null;
+  var discount_price = req.body.discount_price   || null;
+  var type   = req.body.type || null;
+  var product_description  = req.body.product_description  || null;
 
-  if(!medicine_name || !parent_company || !price){
-    console.log("Invalid insert, medicine_name or parent_company or price filed cannot be empty");
-    res.status(500).send({ error: 'Cumpolsary filed cannot be empty' })
+  if(!medicine_name || !price){
+    console.log("Invalid insert, medicine_name or price filed cannot be empty");
+    res.status(500).send({ error: 'Compolsary filed cannot be empty' })
   }
   else{
-    var value    = [[medicine_name, type, parent_company, price, product_description, discount_price, taxable]];
-    let sql = "INSERT INTO medicine (medicine_name, type, parent_company, price, product_description, discount_price, taxable) VALUES ?"
+    var value    = [[medicine_name, COMPOSITION, HSN_CODE, GST, price, P_T_R, P_T_S, discount_price, type, product_description]];
+    let sql = "INSERT INTO medicine (medicine_name, COMPOSITION, HSN_CODE, GST, price, P_T_R, P_T_S, discount_price, type, product_description) VALUES ?"
     mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
@@ -48,7 +51,7 @@ router.get('/create-product-table', (req, res) => {
 
 // Fetch the entire table of the medicine bank except the answer
 router.get('/fetch-medicines', (req, res) => {
-  let sql = "SELECT medicine_name, type, parent_company, price, product_description, discount_price, taxable FROM medicine"
+  let sql = "SELECT medicine_name, COMPOSITION, type, price, product_description, discount_price FROM medicine"
   mysqlConnection.query(sql , (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in fetching medicine", message : err})
@@ -108,8 +111,8 @@ router.put('/update-medicine/:id', function(req, res) {
        }
     })
    }
-   if(req.body.parent_company){
-    let sql = "UPDATE medicine SET parent_company=" +mysql.escape(req.body.parent_company) + " WHERE medicine_id=" + mysql.escape(req.params.id);
+   if(req.body.COMPOSITION){
+    let sql = "UPDATE medicine SET COMPOSITION=" +mysql.escape(req.body.COMPOSITION) + " WHERE medicine_id=" + mysql.escape(req.params.id);
     mysqlConnection.query(sql, (err, result) => {
        if(err) {
            console.log(err);
@@ -144,8 +147,35 @@ router.put('/update-medicine/:id', function(req, res) {
        }
     })
    }
-   if(req.body.taxable){
-    let sql = "UPDATE medicine SET taxable=" +mysql.escape(req.body.taxable) + " WHERE medicine_id=" + mysql.escape(req.params.id);
+   if(req.body.HSN_CODE ){
+    let sql = "UPDATE medicine SET HSN_CODE=" +mysql.escape(req.body.HSN_CODE) + " WHERE medicine_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.GST){
+    let sql = "UPDATE medicine SET GST=" +mysql.escape(req.body.GST) + " WHERE medicine_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.P_T_R  ){
+    let sql = "UPDATE medicine SET P_T_R=" +mysql.escape(req.body.P_T_R) + " WHERE medicine_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.P_T_S  ){
+    let sql = "UPDATE medicine SET P_T_S=" +mysql.escape(req.body.P_T_S) + " WHERE medicine_id=" + mysql.escape(req.params.id);
     mysqlConnection.query(sql, (err, result) => {
        if(err) {
            console.log(err);

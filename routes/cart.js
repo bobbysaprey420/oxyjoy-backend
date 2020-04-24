@@ -7,7 +7,7 @@ const multer = require('multer');
 
 // create medicine table
 router.get('/create-cart-table', (req, res) => {
-    let sql = "CREATE TABLE cart(user_id VARCHAR(1024) NOT NULL, medicine_id INT NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
+    let sql = "CREATE TABLE cart(user_id VARCHAR(1024) NOT NULL, medicine_id INT(11) NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -101,7 +101,7 @@ router.get('/create-order-table', (req, res) => {
 
 
 router.get('/create-order-product-table', (req, res) => {
-    let sql = "CREATE TABLE order_product(order_id INT NOT NULL, medicine_id INT NOT NULL, quantity INT NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(order_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
+    let sql = "CREATE TABLE order_product(order_id INT NOT NULL, medicine_id INT(11) NOT NULL, quantity INT NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(order_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);

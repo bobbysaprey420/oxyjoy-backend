@@ -88,7 +88,7 @@ router.delete('/delete-user/:id', function(req, res, next) {
 
 // create address table
 router.get('/create-address-table', (req, res) => {
-  let sql = "CREATE TABLE address(address_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address VARCHAR(5000), landmark VARCHAR(1000), city VARCHAR(128), state VARCHAR(128), mobile_no VARCHAR(128), FOREIGN KEY (user_id) REFERENCES user(user_id))"
+  let sql = "CREATE TABLE address(address_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address VARCHAR(5000), landmark VARCHAR(1000), city VARCHAR(128), state VARCHAR(128), mobile_no VARCHAR(128), latitude double, longitude double, pincode int, FOREIGN KEY (user_id) REFERENCES user(user_id))"
   mysqlConnection.query(sql, (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in creating table", message : err})
@@ -108,14 +108,17 @@ router.post('/insert-address', (req, res) => {
    var city  = req.body.city || null;
    var state  = req.body.state || null;
    var mobile_no  = req.body.mobile_no || null;
+   var latitude   = req.body.latitude  || null;
+   var longitude   = req.body.longitude  || null;
+   var pincode   = req.body.pincode  || null;
  
    if(!user_id){
      console.log("Invalid insert, user_id cannot be null");
      res.status(500).send({ error: 'User_id not found' })
    }
    else{
-     var value    = [[user_id, address, landmark, city, state, mobile_no]];
-     let sql = "INSERT INTO address (user_id, address, landmark, city, state, mobile_no) VALUES ?"
+     var value    = [[user_id, address, landmark, city, state, mobile_no, latitude, longitude, pincode]];
+     let sql = "INSERT INTO address (user_id, address, landmark, city, state, mobile_no, latitude, longitude, pincode) VALUES ?"
      mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
@@ -225,6 +228,34 @@ router.put('/update-address/:id', function(req, res) {
        }
     })
    }
+   if(req.body.latitude){
+    let sql = "UPDATE address SET latitude= " +mysql.escape(req.body.latitude) + " WHERE address_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.longitude){
+    let sql = "UPDATE address SET longitude= " +mysql.escape(req.body.longitude) + " WHERE address_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.pincode){
+    let sql = "UPDATE address SET pincode= " +mysql.escape(req.body.pincode) + " WHERE address_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   
    if(error.length == 0)
    res.send({success: 'Updating the address table is successful'});
    else
