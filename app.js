@@ -2,7 +2,8 @@ const express = require('express');
 var methodOverride = require("method-override");
 var bodyParser = require("body-parser");
 const app = express();
-
+var mysqlAdmin = require('node-mysql-admin');
+app.use(mysqlAdmin(app));
 
 
 var mysqlConnection = require('./connection')
