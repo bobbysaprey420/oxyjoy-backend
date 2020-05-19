@@ -31,18 +31,34 @@ var userIndex = require("./routes/user")
 var cart = require("./routes/cart");
 var directOrder = require("./routes/direct_order")
 
+//product folder
+var product = require("./routes/product/product")
+var productType = require("./routes/product/product_type")
+var medicineType = require("./routes/product/medicine_type")
+var companyMedicine = require("./routes/product/company_medicine")
+var medicineBranch = require("./routes/product/medicine_branch")
+var subcategory = require("./routes/product/subcategory")
+var manufacturer = require("./routes/product/manufacturer")
+var brandName = require("./routes/product/brand_name")
+
 app.get('/tab', (req,res) => {
     res.render('tab');
   });
-
-
-
 
 
 app.use("/", productRoutes);
 app.use("/", directOrder)
 app.use("/user", userIndex);
 app.use("/cart", cart);
+
+app.use("/product", product);
+app.use("/productType", productType);
+app.use("/medicine", medicineType);
+app.use("/comp_medicine", companyMedicine);
+app.use("/medi_branch", medicineBranch);
+app.use("/subcategory", subcategory);
+app.use("/manufacturer", manufacturer);
+app.use("/brand", brandName);
 
 app.listen('3000', () => {
     console.log('Server started at port 3000');
