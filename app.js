@@ -4,13 +4,55 @@ var bodyParser = require("body-parser");
 const app = express();
 var mysqlAdmin = require('node-mysql-admin');
 app.use(mysqlAdmin(app));
+var cors = require('cors')
+app.use(cors());
+const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
+
+const pathToRegexp = require('path-to-regexp');
+
+// Use JWT auth to secure the API
+const unprotected = [
+    pathToRegexp('/*'),
+    pathToRegexp('/user*'),
+    pathToRegexp('/cart*'),
+    pathToRegexp('/product*'),
+    pathToRegexp('/productType*'),
+    pathToRegexp('/medicine*'),
+    pathToRegexp('/comp_medicine*'),
+    pathToRegexp('/medi_branch*'),
+    pathToRegexp('/subcategory*'),
+    pathToRegexp('/manufacturer*'),
+    pathToRegexp('/brand*'),
+    '/admin/login'
+];
+
+
 
 
 var mysqlConnection = require('./connection')
-
 app.use(methodOverride("_method"));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.header("content-type", "application/json; charset=utf-8")
+    next();
+  });
+
+app.use(expressJwt({secret: 'oxyjoy-admin-secret', algorithms: ['RS256']}).unless({path: unprotected}));
+
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401).send('invalid token...');
+    }
+});
+
+
 app.use('/uploads', express.static('uploads'));
 app.use('/direct_uploads', express.static('direct_uploads'));
 
@@ -41,6 +83,10 @@ var subcategory = require("./routes/product/subcategory")
 var manufacturer = require("./routes/product/manufacturer")
 var brandName = require("./routes/product/brand_name")
 
+
+//adminRoutes
+var adminRoutes    = require('./routes/admin');
+
 app.get('/tab', (req,res) => {
     res.render('tab');
   });
@@ -59,6 +105,18 @@ app.use("/medi_branch", medicineBranch);
 app.use("/subcategory", subcategory);
 app.use("/manufacturer", manufacturer);
 app.use("/brand", brandName);
+app.use("/admin", adminRoutes);
+
+app.use(function*(next) {
+    if (this.path.startsWith('/myadmin')) {
+        if (this.status === 404 || this.status === '404') {
+            delete this.res.statusCode
+        }
+        this.respond = false
+        expressApp(this.req, this.res)
+    }
+});
+
 
 app.listen('3000', () => {
     console.log('Server started at port 3000');

@@ -9,7 +9,7 @@ router.get('/create-user-table', (req, res) => {
     mysqlConnection.query(sql, (err, result) => {
       if(err){
         res.send({ error : "Error in creating table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -31,7 +31,7 @@ router.post('/insert-user', (req, res) => {
      mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -45,7 +45,7 @@ router.get('/fetch-user/:id', (req, res) => {
     mysqlConnection.query(sql , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in fetching  of a user in table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -76,7 +76,7 @@ router.delete('/delete-user/:id', function(req, res, next) {
   mysqlConnection.query(sql, function(err, result) {
     if(err){
       res.status(500).send({ error : "Error in deleting", message : err})
-    } 
+    }
     else{
       res.send({success : "Successfull"});
     }
@@ -92,7 +92,7 @@ router.get('/create-address-table', (req, res) => {
   mysqlConnection.query(sql, (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in creating table", message : err})
-    } 
+    }
     else{
       res.send(result);
     }
@@ -111,7 +111,7 @@ router.post('/insert-address', (req, res) => {
    var latitude   = req.body.latitude  || null;
    var longitude   = req.body.longitude  || null;
    var pincode   = req.body.pincode  || null;
- 
+
    if(!user_id){
      console.log("Invalid insert, user_id cannot be null");
      res.status(500).send({ error: 'User_id not found' })
@@ -122,7 +122,7 @@ router.post('/insert-address', (req, res) => {
      mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -136,7 +136,7 @@ router.get('/fetch-alladdress', (req, res) => {
     mysqlConnection.query(sql , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in fetching address from table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -150,7 +150,7 @@ router.get('/fetch-address-addressid/:id', (req, res) => {
     mysqlConnection.query(sql , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in fetching a address of a user in table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -164,7 +164,7 @@ router.get('/fetch-address-userid/:id', function(req, res) {
     mysqlConnection.query(sql, function(err, result) {
       if(err){
         res.status(500).send({ error : "Error in fetching a address with user id table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -255,7 +255,7 @@ router.put('/update-address/:id', function(req, res) {
        }
     })
    }
-   
+
    if(error.length == 0)
    res.send({success: 'Updating the address table is successful'});
    else
@@ -270,7 +270,7 @@ router.delete('/delete-address/:id', function(req, res, next) {
   mysqlConnection.query(sql, function(err, result) {
     if(err){
       res.status(500).send({ error : "Error in deleting", message : err})
-    } 
+    }
     else{
       res.send({success : "Successfull"});
     }

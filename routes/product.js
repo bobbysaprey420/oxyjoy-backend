@@ -2,14 +2,15 @@ var express = require("express");
 var router = express.Router();
 const mysql = require('mysql');
 var mysqlConnection = require('../connection')
-
+var cors = require('cors')
+router.use(cors());
 // create medicine table
 router.get('/create-product-table', (req, res) => {
     let sql = "CREATE TABLE medicine(medicine_id INT(11) AUTO_INCREMENT PRIMARY KEY, medicine_name TEXT NOT NULL, COMPOSITION TEXT, HSN_CODE int(11), GST text, price int(11) not null, P_T_R double, P_T_S double, discount_price double, type text, product_description text, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP)"
     mysqlConnection.query(sql, (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in creating table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -41,7 +42,7 @@ router.get('/create-product-table', (req, res) => {
     mysqlConnection.query(sql, [value] , (err, result) => {
       if(err){
         res.status(500).send({ error : "Error in inserting table", message : err})
-      } 
+      }
       else{
         res.send(result);
       }
@@ -51,12 +52,26 @@ router.get('/create-product-table', (req, res) => {
 
 // Fetch the entire table of the medicine bank except the answer
 router.get('/fetch-medicines', (req, res) => {
-  let sql = "SELECT medicine_name, COMPOSITION, type, price, product_description, discount_price FROM medicine"
+  let sql = "SELECT medicine_id,medicine_name, COMPOSITION, type, price, product_description, discount_price FROM medicine"
   mysqlConnection.query(sql , (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in fetching medicine", message : err})
-    } 
+    }
     else{
+      res.send(result);
+    }
+    })
+});
+
+router.get('/fetch-medicines-pura', (req, res) => {
+  let sql = "SELECT * FROM medicine"
+  mysqlConnection.query(sql , (err, result) => {
+    if(err){
+      console.log(result);
+      res.status(500).send({ error : "Error in fetching medicine pura", message : err})
+    }
+    else{
+      console.log(result);
       res.send(result);
     }
     })
@@ -68,7 +83,7 @@ router.get('/fetch-medicine-and-id', (req, res) => {
   mysqlConnection.query(sql , (err, result) => {
     if(err){
       res.status(500).send({ error : "Error in fetching", message : err})
-    } 
+    }
     else{
       res.send(result);
     }
@@ -82,7 +97,7 @@ router.get('/fetch-medicine/:id', function(req, res) {
   mysqlConnection.query(sql, function(err, result) {
     if(err){
       res.status(500).send({ error : "Error in fetching medicine", message : err})
-    } 
+    }
     else{
       res.send(result);
     }
@@ -193,16 +208,24 @@ router.put('/update-medicine/:id', function(req, res) {
 // delete a particular medicine from the table
 router.delete('/delete-medicine/:id', function(req, res, next) {
   var id = req.params.id;
-  var sql = "DELETE FROM medicine WHERE medicine_id=" + mysql.escape(id);
+  var sql = "DELETE FROM cart WHERE medicine_id=" + mysql.escape(id);
   mysqlConnection.query(sql, function(err, result) {
     if(err){
       res.status(500).send({ error : "Error in deleting", message : err})
-    } 
-    else{
-      res.send({success : "Successfull"});
     }
-  })
-})
+    else{
+      var sql4 = "DELETE FROM medicine WHERE medicine_id=" + mysql.escape(id);
+      mysqlConnection.query(sql4, function(err4, result4) {
+        if(err4){
+          res.status(202).send({ error: err4 })
+        }
+        else{
+          res.status(200).send(result4);
+        }
+    })
+  }
+});
+});
 
 
 module.exports = router;

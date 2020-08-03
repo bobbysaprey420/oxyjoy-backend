@@ -1,13 +1,15 @@
+
 var express = require("express");
 var router = express.Router();
 const mysql = require('mysql');
 var mysqlConnection = require('../connection')
 const multer = require('multer');
-
+var cors = require('cors')
+router.use(cors());
 
 // create medicine table
 router.get('/create-cart-table', (req, res) => {
-    let sql = "CREATE TABLE cart(user_id VARCHAR(1024) NOT NULL, medicine_id INT(11) NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
+    let sql = "CREATE TABLE cart(user_id VARCHAR(1024) NOT NULL, medicine_id INT(11) NOT NULL, quantity INT NOT NULL, insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id) ON DELETE CASCADE)"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -88,7 +90,7 @@ router.delete('/delete-item-cart/:user_id/:medicine_id', (req, res) => {
 
 
 router.get('/create-order-table', (req, res) => {
-    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address_id INT NOT NULL, status VARCHAR(1000) DEFAULT 'NOT CONFIRMED', insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id))"
+    let sql = "CREATE TABLE orders(order_id INT AUTO_INCREMENT PRIMARY KEY, user_id VARCHAR(1024) NOT NULL, address_id INT NOT NULL, imagefile_refernce VARCHAR(1000) NOT NULL, amount FLOAT DEFAULT 0, bill_pdf VARCHAR(256), delivery_date DATE, description VARCHAR(256), status_code int default 0,  status_message VARCHAR(1000) DEFAULT 'NOT CONFIRMED', status_description VARCHAR(1000), tracking_id varchar(256), insert_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES user(user_id), FOREIGN KEY (address_id) REFERENCES address(address_id) ON DELETE CASCADE)"
     mysqlConnection.query(sql, (err, result) => {
         if(err){
             console.log(err);
@@ -194,7 +196,33 @@ router.post('/submit-order', (req,res) => {
     }
 });
 
-
+router.post('/post-orders', (req, res) => {
+    const user_id = req.body.user_id;
+    const address_id = req.body.address_id;
+    const imagefile_refernce=req.body.imagefile_refernce;
+    const amount=req.body.amount || 0;
+    const bill_pdf=req.body.bill_pdf || null;
+    const description=req.body.description || null;
+    const status_code=req.body.status_code || 0;
+    const status_message=req.body.status_message || "NOT CONFIRMED";
+    const status_description=req.body.status_description || null;
+    const tracking_id=req.body.tracking_id || null;
+    const delivery_date=req.body.delivery_date || null;
+    if(!user_id){
+       res.status(500).send({ error: 'User Id cannot be null' });
+    }
+    else{
+        var value    = [[user_id, address_id,imagefile_refernce,amount,bill_pdf,description,status_code,status_message,status_description,tracking_id]];
+        let sql = "INSERT INTO orders(user_id, address_id,imagefile_refernce,amount,bill_pdf,description,status_code,status_message,status_description,tracking_id) VALUES ?"
+        mysqlConnection.query(sql, [value] , (err, result) => {
+            if(err){
+                res.status(500).send({ error: 'Error in inserting' })
+            }
+            else
+            res.send({ success : "Success"});
+       })
+   }
+});
 
 router.get('/all-order-details-user/:id', (req,res) =>{
     var user_id = req.params.id;
@@ -218,7 +246,7 @@ router.get('/all-order-details-user/:id', (req,res) =>{
                 }
             })
         }
-        
+
     })
 })
 
@@ -300,10 +328,107 @@ router.get('/allorder-product-details', (req, res) =>{
     });
 })
 
+router.put('/update-orders-status-code-message/:id', (req, res) =>{
+  var error = []
+   if(req.body.status_code){
+    let sql = "UPDATE orders SET status_code=" +mysql.escape(req.body.status_code) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.status_message){
+    let sql = "UPDATE orders SET status_message=" +mysql.escape(req.body.status_message) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+
+   if(req.body.status_description){
+    let sql = "UPDATE orders SET status_description=" +mysql.escape(req.body.status_description) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+
+   if(req.body.bill_pdf){
+    let sql = "UPDATE orders SET bill_pdf=" +mysql.escape(req.body.bill_pdf) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.amount){
+    let sql = "UPDATE orders SET amount=" +mysql.escape(req.body.amount) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.description){
+    let sql = "UPDATE orders SET description=" +mysql.escape(req.body.description) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+   if(req.body.tracking_id){
+    let sql = "UPDATE orders SET tracking_id=" +mysql.escape(req.body.tracking_id) + " WHERE order_id=" + mysql.escape(req.params.id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err) {
+           console.log(err);
+           error.push(err)
+       }
+    })
+   }
+
+   if(error.length == 0)
+   res.send({success: 'Updating the orders status-code or status-message table is successful'});
+   else
+   res.send({error : error});
+});
+
+router.delete('/delete-orders-byorder_id/:id', (req, res) => {
+    var order_id = req.params.id;
+    let sql = "DELETE FROM order_product WHERE order_id =" + mysql.escape(order_id);
+    mysqlConnection.query(sql, (err, result) => {
+       if(err){
+           console.log(err);
+           res.status(500).send({ error: 'Error in deleting a order from a order_product' })
+       }
+       else{
+         let sql1 = "DELETE FROM orders WHERE order_id =" + mysql.escape(order_id);
+         mysqlConnection.query(sql1, (err1, result1) => {
+            if(err1){
+              console.log(err1);
+              res.status(500).send({ error: 'Error in deleting a order from a order_id' })
+          }
+          else{
+              res.send({success : "Delete Success"});
+          }
+       })
+    }
+})
+});
 
 
-/* router.get('/direct-order-asd1234', (req, res) => {
-    var name = 
+/*
+ router.get('/direct-order-asd1234', (req, res) => {
+    var name =
 }) */
 
 
