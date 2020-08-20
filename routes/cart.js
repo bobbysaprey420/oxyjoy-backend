@@ -101,6 +101,32 @@ router.get('/create-order-table', (req, res) => {
     })
 });
 
+//get order by order_id join by user table by users table and join by address table by address_id
+router.get('/all-order-user-address', (req,res) =>{
+    let sql = "SELECT * FROM orders INNER JOIN user ON orders.user_id = user.user_id INNER JOIN address ON address.address_id = orders.address_id"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all direct orders' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
+
+//get order by order id in cartorder table
+router.get('/all-order-byorderid/:id', (req,res) => {
+    var user_id = req.params.id;
+    let sql = "SELECT * FROM orders WHERE order_id =" + mysql.escape(user_id);
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching orders from order table by orderid' })
+        }
+        else{
+            res.send(result);
+        }
+    })
+});
 
 router.get('/create-order-product-table', (req, res) => {
     let sql = "CREATE TABLE order_product(order_id INT NOT NULL, medicine_id INT(11) NOT NULL, quantity INT NOT NULL, FOREIGN KEY (order_id) REFERENCES orders(order_id), FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id))"
@@ -113,6 +139,20 @@ router.get('/create-order-product-table', (req, res) => {
         res.send(result);
     })
 });
+
+//get order product by order id inner join by product table on product_is(or medicine_id)
+router.get('/all-order-product', (req,res) =>{
+    let sql = "SELECT * FROM order_product INNER JOIN product ON order_product.order_id = product.product_id"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all direct orders' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
+
 
 router.post('/submit-order', (req,res) => {
     var user_id = req.body.user_id;

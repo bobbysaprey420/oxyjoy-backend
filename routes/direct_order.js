@@ -201,6 +201,17 @@ router.get('/all-direct-orders', (req,res) =>{
     });
 });
 
-
+//get order by order_id join by user table by users table and join by address table by address_id;
+router.get('/all-direct-order-user-address', (req,res) =>{
+    let sql = "SELECT * FROM direct_order INNER JOIN user ON direct_order.user_id = user.user_id INNER JOIN address ON address.address_id = direct_order.address_id"
+    mysqlConnection.query(sql, (err, result) => {
+        if(err){
+            res.status(500).send({ error: 'Error in fetching all direct orders' })
+        }
+        else{
+            res.send(result);
+        }
+    });
+});
 
  module.exports = router;
